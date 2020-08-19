@@ -1,0 +1,3 @@
+docker run -it --rm --name sidecar \
+  --net container:haproxy1 \
+  nicolaka/netshoot

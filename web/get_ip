@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo dev1
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' dev1
+echo dev2
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' dev2
+echo prod1
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' prod1
+echo prod2
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' prod2
