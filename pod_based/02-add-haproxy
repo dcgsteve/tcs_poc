@@ -1,0 +1,7 @@
+#!/bin/bash
+
+podman run -d \
+  --pod tcs1 \
+  -v /dev/shm:/dev/shm \
+  -v ${PWD}/config:/usr/local/etc/haproxy \
+  haproxy:2.2.2

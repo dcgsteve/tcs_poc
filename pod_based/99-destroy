@@ -1,0 +1,4 @@
+#!/bin/bash
+
+podman pod kill tcs1
+podman pod rm tcs1 -f
