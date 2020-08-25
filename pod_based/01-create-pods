@@ -1,0 +1,16 @@
+#!/bin/bash
+
+podman pod create \
+  --name tcs \
+  --hostname tcs1 \
+  -p 80:80,443:443,8404:8404
+
+podman pod create \
+  --name dev \
+  --hostname dev \
+  -p 80:80
+
+podman pod create \
+  --name prod \
+  --hostname prod \
+  -p 80:80
