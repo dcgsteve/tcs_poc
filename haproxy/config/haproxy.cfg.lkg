@@ -1,0 +1,96 @@
+#---------------------------------------------------------------------
+# Global settings
+#---------------------------------------------------------------------
+global
+    #log         127.0.0.1 local2
+
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    # daemon
+
+    # turn on stats unix socket
+    stats socket /var/lib/haproxy/stats
+
+#---------------------------------------------------------------------
+# defaults
+#---------------------------------------------------------------------
+defaults
+    mode                    http
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+    #option forwardfor       except 127.0.0.0/8
+    option forwardfor
+    option                  redispatch
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+
+#---------------------------------------------------------------------
+# DataPLane API
+#---------------------------------------------------------------------
+userlist dataplaneapi
+    user admin insecure-password poctest
+
+program api
+   command /usr/bin/dataplaneapi --host 0.0.0.0 --port 5555 --haproxy-bin /usr/sbin/haproxy --config-file /etc/haproxy/haproxy.cfg --reload-cmd "kill -SIGUSR2 1" --reload-delay 5 --userlist dataplaneapi
+   no option start-on-reload
+
+#---------------------------------------------------------------------
+# main frontend which proxys to the backends
+#---------------------------------------------------------------------
+frontend  main
+    bind *:80
+    # bind *:443 ssl # To be completed ....
+
+    # additional options
+    option forwardfor header X-Real-IP
+
+    # ACLs
+    acl projecta_endpoint src 192.168.15.193
+
+    # whitelist endpoint(s)
+    http-request deny if !projecta_endpoint
+
+    # whitelist domains (no default backend)
+    use_backend dev if { hdr(host) -i webdev.poc }
+    #use_backend prod if { hdr(host) -i webprod.poc }
+
+#---------------------------------------------------------------------
+# statistics frontend
+#---------------------------------------------------------------------
+frontend stats
+  bind *:8404
+  stats enable
+  stats uri /
+  stats refresh 2s
+  stats admin if LOCALHOST
+
+#---------------------------------------------------------------------
+# Backend - dev
+#---------------------------------------------------------------------
+backend dev
+  balance roundrobin
+  mode http
+  option httpchk HEAD /
+  server dev1 192.168.15.194:80 check rise 1 fall 1
+
+#---------------------------------------------------------------------
+# Backend - prod
+#---------------------------------------------------------------------
+backend prod
+  balance roundrobin
+  mode http
+  option httpchk HEAD /
+  server prod1 192.168.15.195:80 check rise 1 fall 1
+  

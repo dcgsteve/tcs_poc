@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+
+  haproxy1:
+    image: dcgsteve/haproxy:001
+    container_name: haproxy1
+    network_mode: "host"
+    ports:
+      - '80:80'
+      - '8404:8404'
+      - '5555:5555'
+    volumes:
+      - ${PWD}/config:/usr/local/etc/haproxy

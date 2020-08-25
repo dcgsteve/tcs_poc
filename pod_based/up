@@ -1,4 +1,0 @@
-#!/bin/bash
-
-podman play kube prod.yml
-podman play kube dev.yml

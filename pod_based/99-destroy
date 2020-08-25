@@ -1,5 +1,0 @@
-#!/bin/bash
-
-podman pod kill tcs && podman pod rm tcs -f
-podman pod kill dev && podman pod rm dev -f
-podman pod kill prod && podman pod rm prod -f

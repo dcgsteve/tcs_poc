@@ -1,3 +1,0 @@
-docker run -it --rm --name client \
-  --network customer_dev \
-  nicolaka/netshoot
