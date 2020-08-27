@@ -1,5 +1,3 @@
-# _version=2
-
 global 
   chroot /var/lib/haproxy
   user haproxy
@@ -44,11 +42,6 @@ frontend stats
   stats uri /
   stats refresh 2s
   stats admin if LOCALHOST
-
-frontend test_frontend 
-  mode http
-  maxconn 2000
-  default_backend dev
 
 backend dev 
   mode http

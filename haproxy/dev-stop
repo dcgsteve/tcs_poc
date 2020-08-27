@@ -1,1 +1,0 @@
-ssh tcsdev 'sudo systemctl stop nginx'
