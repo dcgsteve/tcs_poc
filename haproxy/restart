@@ -3,5 +3,5 @@
 mkdir -p /dev/shm/haproxy
 
 docker-compose down
-sudo cp haproxy.cfg.live /dev/shm/haproxy/haproxy.cfg
+sudo cp haproxy.cfg.init /dev/shm/haproxy/haproxy.cfg
 docker-compose up -d
