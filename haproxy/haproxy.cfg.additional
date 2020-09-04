@@ -1,0 +1,21 @@
+frontend main 
+  bind *:80
+  acl project_a_endpoint src 192.168.15.193
+  acl customer_endpoint1 hdr_dom(host) -i webdev.poc
+  acl customer_endpoint2 hdr_dom(host) -i webprod.poc
+  option forwardfor header X-Real-IP
+  use_backend dev if project_a_endpoint customer_endpoint1
+  use_backend prod if project_a_endpoint customer_endpoint2
+
+backend dev 
+  mode http
+  balance roundrobin
+  option httpchk HEAD /
+  server dev1 192.168.15.194:80 check rise 1 fall 1
+
+backend prod 
+  mode http
+  balance roundrobin
+  option httpchk HEAD /
+  server prod1 192.168.15.195:80 check rise 1 fall 1
+

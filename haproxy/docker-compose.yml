@@ -2,13 +2,29 @@ version: '3'
 
 services:
 
-  haproxy1:
+  oxpilot:
+    image: gatblau/pilot-snapshot
+    container_name: oxpilot
+    restart: unless-stopped
+    extra_hosts:
+        - "tcsonix:192.168.15.198"
+    environment:
+      OXP_ONIX_URL: "http://tcsonix:8080"
+      OXP_ONIX_USERNAME: "admin"
+      OXP_ONIX_PASSWORD: "0n1x"
+      OXP_BROKER_SERVER: "tcp://tcsonix:1883"
+      OXP_APP_KEY: "TCS1"
+      OXP_APP_CFGFILE: "/usr/local/etc/haproxy/haproxy.cfg"
+      # Need to add in reload command - when we figure out how to do it!
+    volumes:
+      - /dev/shm/haproxy:/usr/local/etc/haproxy/
+
+  haproxy:
     image: dcgsteve/haproxy:001
-    container_name: haproxy1
-    network_mode: "host"
+    container_name: haproxy
     ports:
-      - '80:80'
-      - '8404:8404'
-      - '5555:5555'
+      - '80:80' # web
+      - '8404:8404' # haproxy Stats
+      - '5555:5555' # API (open to host for testing)
     volumes:
       - /dev/shm/haproxy:/usr/local/etc/haproxy/

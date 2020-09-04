@@ -1,5 +1,8 @@
 # HAProxy.cfg create
 
+*NB. To restart, potentially use this command inside the container?*
+`haproxy -W -db -f /usr/local/etc/haproxy/haproxy.cfg -sf $(cat /var/run/haproxy.pid)`
+
 ## global
 ```
 global 

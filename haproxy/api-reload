@@ -1,0 +1,5 @@
+#!/bin/bash
+
+curl -X POST "http://admin:poctest@localhost:5555/v2/services/haproxy/configuration/raw?skip_version=true&force_reload=true" \
+-H "Content-Type: text/plain" \
+--upload-file $1
