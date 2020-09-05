@@ -1,3 +1,0 @@
-#!/bin/bash
-
-curl -X GET "http://admin:poctest@localhost:5555/v2/services/haproxy/configuration/raw"
