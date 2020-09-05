@@ -1,0 +1,60 @@
+#!/bin/bash
+
+echo Settings environments
+CFGDIR="./config/"
+
+echo =============================================================
+echo Ensuring host allows unprivileged ports less than 1024
+echo =============================================================
+sudo sysctl -w net.ipv4.ip_unprivileged_port_start=0
+sudo sysctl -w net.ipv4.ip_forward=1
+sudo sysctl --system
+
+echo =============================================================
+echo Creating TCS Pod ...
+echo =============================================================
+podman pod create --hostname tcs --name tcs \
+  -p 80:80,8404:8404 \
+  --add-host="tcsonix:192.168.15.198" # Just for PoC - DNS would normally resolve
+
+echo =============================================================
+echo Setting up initial Proxy configuration in memory ...
+echo =============================================================
+sudo mkdir -p /dev/shm/haproxy
+sudo chown -R steve:root /dev/shm/haproxy
+#cp haproxy.cfg.init ${CFGDIR}/haproxy.cfg
+cp haproxy.cfg.full ${CFGDIR}/haproxy.cfg
+echo Finished copy
+
+echo =============================================================
+echo Starting HAProxy ...
+echo =============================================================
+podman run -d --name haproxy \
+  --pod tcs \
+  --restart unless-stopped \
+  -v ${CFGDIR}:/usr/local/etc/haproxy \
+  dcgsteve/haproxy:2.2
+
+if false; then
+echo =============================================================
+echo Starting Onix Pilot in sidecar mode ...
+echo =============================================================
+podman run -d --name oxpilot \
+  --pod tcs \
+  --restart unless-stopped \
+  -v ${CFGDIR}:/usr/local/etc/haproxy \
+  -e OXP_ONIX_URL="http://tcsonix:8080" \
+  -e OXP_ONIX_USERNAME="admin" \
+  -e OXP_ONIX_PASSWORD="0n1x" \
+  -e OXP_BROKER_SERVER="tcp://tcsonix:1883" \
+  -e OXP_APP_KEY="TCS1" \
+  -e OXP_APP_CFGFILE="/usr/local/etc/haproxy/haproxy.cfg" \
+  -e OXP_APP_RELOADCMD="" \
+  -e OXP_APP_RELOADURI="" \
+  -e OXP_APP_READYURI="" \
+  gatblau/pilot-snapshot
+fi
+
+
+#  -e OXP_APP_RELOADCMD="curl -X POST 'http://admin:poctest@localhost:5555/v2/services/haproxy/configuration/raw?skip_version=true&force_reload=true' -H 'Content-Type: text/plain' --upload-file /usr/local/etc/haproxy/haproxy.cfg" \
+

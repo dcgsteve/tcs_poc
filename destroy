@@ -1,0 +1,6 @@
+#!/bin/bash
+
+
+# Stop
+docker kill haproxy # fast!
+docker-compose down

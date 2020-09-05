@@ -1,0 +1,8 @@
+#!/bin/bash
+
+docker cp haproxy:/usr/local/etc/haproxy/haproxy.cfg current.haproxy
+docker cp oxpilot:/tmp/haproxy.cfg current.oxpilot
+
+echo HAProxy to OXPilot
+echo ========================================================================================
+sdiff -W -s current.haproxy current.oxpilot

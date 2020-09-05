@@ -1,0 +1,4 @@
+#!/bin//bash
+
+#podman logs -f oxpilot
+docker logs -f oxpilot

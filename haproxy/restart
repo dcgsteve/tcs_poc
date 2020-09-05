@@ -1,8 +1,0 @@
-#!/bin/bash
-
-mkdir -p /dev/shm/haproxy
-
-docker-compose down
-#cp haproxy.cfg.init /dev/shm/haproxy/haproxy.cfg
-cp haproxy.cfg.full /dev/shm/haproxy/haproxy.cfg
-docker-compose up -d

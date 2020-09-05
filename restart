@@ -1,0 +1,20 @@
+#!/bin/bash
+
+CFGDIR="/home/steve/tcs_poc/haproxy/config"
+
+# Stop (just in case)
+docker kill haproxy # fast!
+docker-compose down
+
+rm ${CFGDIR} -rf
+mkdir -p ${CFGDIR}
+
+cp haproxy.cfg.init ${CFGDIR}/haproxy.cfg
+
+#sudo chown -R pilot:tcs ${CFGDIR}
+#sudo chmod -R g+rws ${CFGDIR}
+#sudo chgrp tcs ${CFGDIR}
+#sudo setfacl -m g:tcs:rw ${CFGDIR}
+
+# Start up containers
+docker-compose up -d haproxy

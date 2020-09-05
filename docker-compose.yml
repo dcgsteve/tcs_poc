@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+
+  haproxy:
+    image: dcgsteve/haproxy-debian:2.2
+    container_name: haproxy
+    restart: unless-stopped
+    environment:
+      HAPROXY_UID: 1000
+      HAPROXY_GID: 1000
+    ports:
+      - 80:80
+      - 8404:8404
+      - 5555:5555
+    volumes:
+      - ${CFGDIR}:/usr/local/etc/haproxy
+
+  pilot:
+    #image: gatblau/pilot-snapshot
+    image: dcgsteve/oxpilot:003
+    container_name: oxpilot
+    restart: unless-stopped
+    extra_hosts:
+      - "tcsonix:192.168.15.198"
+    environment:
+      UID: 1000
+      PID: 1000
+      OXP_ONIX_URL: "http://tcsonix:8080"
+      OXP_ONIX_USERNAME: "admin"
+      OXP_ONIX_PASSWORD: "0n1x"
+      OXP_BROKER_SERVER: "tcp://tcsonix:1883"
+      OXP_APP_KEY: "TCS1"
+      OXP_APP_CFGFILE: "/tmp/haproxy.cfg"
+      OXP_APP_RELOADCMD: ""
+      OXP_APP_RELOADURI: "http://haproxy:5555/v2/services/haproxy/configuration/raw?skip_version=true&force_reload=true"
+      OXP_APP_RELOADURICONTENTTYPE: "text/plain"
+      OXP_APP_RELOADURIUSER: "admin"
+      OXP_APP_RELOADURIPWD: "poctest"
+      OXP_APP_READYURI: ""

@@ -1,0 +1,61 @@
+global 
+  chroot /var/lib/haproxy
+  user haproxy
+  group haproxy
+  maxconn 4000
+  pidfile /var/run/haproxy.pid
+  stats socket /var/lib/haproxy/stats
+
+defaults 
+  mode http
+  maxconn 3000
+  log global
+  option httplog
+  option redispatch
+  option dontlognull
+  option http-server-close
+  option forwardfor
+  timeout http-request 10s
+  timeout check 10s
+  timeout connect 10s
+  timeout client 1m
+  timeout queue 1m
+  timeout server 1m
+  timeout http-keep-alive 10s
+  retries 3
+
+frontend stats 
+  bind *:8404
+  stats enable
+  stats uri /
+  stats refresh 2s
+#  stats admin if LOCALHOST
+
+userlist dataplaneapi 
+  user admin insecure-password poctest
+
+program api 
+  command /usr/bin/dataplaneapi --host 0.0.0.0 --port 5555 --haproxy-bin /usr/sbin/haproxy --config-file /etc/haproxy/haproxy.cfg --reload-cmd "kill -SIGUSR2 1" --reload-delay 5 --userlist dataplaneapi
+  no option start-on-reload
+
+frontend main 
+  bind *:80
+  acl project_a_endpoint src 192.168.15.0/24
+  acl customer_endpoint1 hdr_dom(host) -i webdev.poc
+  acl customer_endpoint2 hdr_dom(host) -i webprod.poc
+  option forwardfor header X-Real-IP
+  use_backend dev if project_a_endpoint customer_endpoint1
+  use_backend prod if project_a_endpoint customer_endpoint2
+
+backend dev 
+  mode http
+  balance roundrobin
+  option httpchk HEAD /
+  server dev1 192.168.15.194:80 check rise 1 fall 1
+
+backend prod 
+  mode http
+  balance roundrobin
+  option httpchk HEAD /
+  server prod1 192.168.15.195:80 check rise 1 fall 1
+
