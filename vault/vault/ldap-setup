@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Make sure LDAP config is clear
+vault auth disable ldap
+vault auth enable ldap
+
+# Add config
+vault write auth/ldap/config \
+  url="ldap://192.168.15.50:389" \
+  binddn="cn=admin,dc=securedata,dc=group" \
+  bindpass="nFjHdy3oQCa2BboX" \
+  userattr="uid" \
+  userdn="ou=users,dc=securedata,dc=group" \
+  groupdn="ou=groups,dc=securedata,dc=group" \
+  groupattr="cn" \
+  groupfilter="(&(objectClass=groupOfNames)(member={{.UserDN}}))" \
+  insecure_tls=true
+
+# Add policy to vault
+vault policy write devs devpol.hcl
+
+# Add group to link to policy
+vault write /auth/ldap/groups/devs policies=devs

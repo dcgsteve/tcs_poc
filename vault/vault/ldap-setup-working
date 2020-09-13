@@ -1,0 +1,21 @@
+vault auth disable ldap
+vault auth enable ldap
+
+vault write auth/ldap/config \
+  url="ldap://192.168.15.50:389" \
+  binddn="cn=admin,dc=inmyhouse,dc=xyz" \
+  bindpass="mypassword" \
+  userattr="uid" \
+  userdn="ou=users,dc=inmyhouse,dc=xyz" \
+  groupdn="ou=groups,dc=inmyhouse,dc=xyz" \
+  groupattr="cn" \
+  groupfilter="(&(objectClass=groupOfNames)(member={{.UserDN}}))" \
+  insecure_tls=true
+
+vault write /auth/ldap/groups/devs \
+  policies=devs
+
+#  groupfilter="(&(objectClass=groupOfNames)(uid={{.Username}}))" \
+#  groupdn="ou=groups,dc=inmyhouse,dc=xyz" \
+#  groupfilter="(&(objectClass=person)(uid={{.Username}}))" \
+

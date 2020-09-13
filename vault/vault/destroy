@@ -1,0 +1,5 @@
+docker-compose down
+sudo rm /docker/vault -rf
+sudo mkdir -p /docker/vault/config
+sudo chown -R steve:steve /docker/vault
+cp init.hcl /docker/vault/config/vault.hcl

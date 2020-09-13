@@ -1,0 +1,23 @@
+#!/bin/bash
+
+docker kill openldap
+
+sudo rm /docker/openldap -rf
+
+docker run --name openldap \
+  -e LDAP_ORGANISATION="securedata" \
+  -e LDAP_DOMAIN="securedata.group" \
+  -e LDAP_ADMIN_PASSWORD="nFjHdy3oQCa2BboX" \
+  -e LDAP_TLS_VERIFY_CLIENT="try" \
+  -v /docker/openldap/ldap:/vqar/lib/ldap \
+  -v /docker/openldap/slapd.d:/vqar/lib/slap \
+  -p 389:389 \
+  -d \
+  --rm \
+  osixia/openldap:latest
+
+sleep 2
+
+ldapadd -cxD "cn=admin,dc=securedata,dc=group" -H ldap://192.168.15.50 -f init.ldif -w nFjHdy3oQCa2BboX
+
+ldapsearch -cxD "cn=admin,dc=securedata,dc=group" -H ldap://192.168.15.50 -b dc=securedata,dc=group -w nFjHdy3oQCa2BboX

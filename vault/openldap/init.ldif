@@ -1,0 +1,41 @@
+dn: ou=groups,dc=securedata,dc=group
+objectClass: organizationalunit
+objectClass: top
+ou: groups
+description: groups of users
+
+dn: ou=users,dc=securedata,dc=group
+objectClass: organizationalunit
+objectClass: top
+ou: users
+description: users
+
+dn: cn=devs,ou=groups,dc=securedata,dc=group
+objectClass: groupofnames
+objectClass: top
+description: testing group for developers
+member: uid=steve,ou=users,dc=securedata,dc=group
+
+dn: cn=architects,ou=groups,dc=securedata,dc=group
+objectClass: groupofnames
+objectClass: top
+description: testing group for architects
+member: uid=andres,ou=users,dc=securedata,dc=group
+
+dn: uid=steve,ou=users,dc=securedata,dc=group
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: steve
+sn: cliff
+userPassword: mypassword
+
+dn: uid=andres,ou=users,dc=securedata,dc=group
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: andres
+sn: alos
+userPassword: mypassword
